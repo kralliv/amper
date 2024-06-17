@@ -34,6 +34,15 @@ internal data class KotlinUserSettings(
     val composeEnabled: Boolean,
 )
 
+@Serializable
+internal data class BuildInfoUserSettings(
+    val file: String?,
+)
+
+internal fun List<Fragment>.mergedBuildInfoSettings(): BuildInfoUserSettings = BuildInfoUserSettings(
+    file = unanimousOptionalSetting("build-info.file") { it.buildInfo?.file },
+)
+
 internal fun List<Fragment>.mergedCompilationSettings(): CompilationUserSettings = CompilationUserSettings(
     kotlin = mergedKotlinSettings(),
     jvmRelease = unanimousOptionalSetting("jvm.release") { it.jvm.release },

@@ -137,6 +137,7 @@ class ProjectTasksBuilder(private val context: ProjectContext, private val model
             get() = if (this) "Test" else ""
 
         internal enum class CommonTaskType(override val prefix: String) : PlatformTaskType {
+            BuildInfo("buildInfo"),
             Compile("compile"),
             Dependencies("resolveDependencies"),
             Jar("jar"),

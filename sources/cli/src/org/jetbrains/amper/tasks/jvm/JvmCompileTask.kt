@@ -34,6 +34,7 @@ import org.jetbrains.amper.frontend.Fragment
 import org.jetbrains.amper.frontend.Platform
 import org.jetbrains.amper.frontend.PotatoModule
 import org.jetbrains.amper.processes.LoggingProcessOutputListener
+import org.jetbrains.amper.tasks.BuildInfoTask
 import org.jetbrains.amper.tasks.CommonTaskUtils.userReadableList
 import org.jetbrains.amper.tasks.CompileTask
 import org.jetbrains.amper.tasks.ResolveExternalDependenciesTask
@@ -90,6 +91,9 @@ class JvmCompileTask(
                 ?: error("jvm compilation result from production compilation result was not found for module=${module.userReadableName}, task=$taskName")
         } else null
 
+        val buildInfoResult = dependenciesResult.filterIsInstance<BuildInfoTask.TaskResult>()
+            .firstOrNull()
+
         val userSettings = fragments.mergedCompilationSettings()
 
         // TODO Make kotlin version configurable in settings
@@ -111,7 +115,8 @@ class JvmCompileTask(
 
         val sources = fragments.map { it.src.toAbsolutePath() }
         val resources = fragments.map { it.resourcesPath.toAbsolutePath() }
-        val inputs = sources + resources + classpath
+        val generatedResources = listOfNotNull(buildInfoResult?.resourcesOutputRoot)
+        val inputs = sources + resources + generatedResources + classpath
 
         executeOnChangedInputs.execute(taskName.name, configuration, inputs) {
             cleanDirectory(taskOutputRoot.path)
@@ -138,6 +143,15 @@ class JvmCompileTask(
                 )
             } else {
                 logger.info("Sources for fragments (${fragments.userReadableList()}) of module '${module.userReadableName}' are missing, skipping compilation")
+            }
+
+            val presentGeneratedResources = generatedResources.filter { it.exists() }
+            for (resource in presentGeneratedResources) {
+                logger.info("Copy generated resources from '$resource' to '${taskOutputRoot.path}'")
+                BuildPrimitives.copy(
+                    from = resource,
+                    to = taskOutputRoot.path
+                )
             }
 
             val presentResources = fragments.map { it.resourcesPath }.filter { it.exists() }

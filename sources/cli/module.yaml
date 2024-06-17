@@ -62,6 +62,7 @@ dependencies:
   - com.sun.xml.bind:jaxb-impl:2.3.2
   - jakarta.xml.bind:jakarta.xml.bind-api:2.3.2
   - io.github.classgraph:classgraph:4.8.172
+  - org.eclipse.jgit:org.eclipse.jgit:6.7.0.202309050840-r
 
 test-dependencies:
   - ../test-base

@@ -17,6 +17,7 @@ import org.jetbrains.amper.gradle.android.AndroidBindingPluginPart
 import org.jetbrains.amper.gradle.apple.AppleBindingPluginPart
 import org.jetbrains.amper.gradle.base.BindingPluginPart
 import org.jetbrains.amper.gradle.base.PluginPartCtx
+import org.jetbrains.amper.gradle.buildinfo.BuildInfoBindingPluginPart
 import org.jetbrains.amper.gradle.compose.ComposePluginPart
 import org.jetbrains.amper.gradle.java.JavaBindingPluginPart
 import org.jetbrains.amper.gradle.kmpp.KMPPBindingPluginPart
@@ -44,6 +45,7 @@ class BindingProjectPlugin : Plugin<Project> {
         val registeredParts = listOf(
             AndroidBindingPluginPart(pluginCtx),
             kmppBindingPluginPart,
+            BuildInfoBindingPluginPart(pluginCtx),
             JavaBindingPluginPart(pluginCtx),
             ComposePluginPart(pluginCtx),
             AppleBindingPluginPart(pluginCtx),

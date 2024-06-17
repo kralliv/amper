@@ -51,6 +51,9 @@ class Settings : SchemaNode() {
 
     @SchemaDoc("Native applications settings")
     var native by nullableValue<NativeSettings>()
+
+    @SchemaDoc("Info settings")
+    var buildInfo by nullableValue<BuildInfoSettings>()
 }
 
 @AdditionalSchemaDef(composeSettingsShortForm)
@@ -170,4 +173,11 @@ class NativeSettings : SchemaNode() {
     // TODO other options from NativeApplicationPart
     @SchemaDoc("The fully-qualified name of the application's entry point function")
     var entryPoint by nullableValue<String>()
+}
+
+
+class BuildInfoSettings : SchemaNode() {
+
+    // TODO Maybe Path, but would have to be relative. Convert seemingly doesn't support that.
+    var file by nullableValue<String>()
 }

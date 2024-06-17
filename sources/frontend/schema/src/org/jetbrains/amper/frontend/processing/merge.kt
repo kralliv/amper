@@ -9,6 +9,7 @@ import org.jetbrains.amper.frontend.api.valueBase
 import org.jetbrains.amper.frontend.schema.AndroidSettings
 import org.jetbrains.amper.frontend.schema.Base
 import org.jetbrains.amper.frontend.schema.ComposeSettings
+import org.jetbrains.amper.frontend.schema.BuildInfoSettings
 import org.jetbrains.amper.frontend.schema.IosFrameworkSettings
 import org.jetbrains.amper.frontend.schema.IosSettings
 import org.jetbrains.amper.frontend.schema.JvmSettings
@@ -60,6 +61,7 @@ fun Settings.merge(overwrite: Settings) = mergeNode(overwrite, ::Settings) {
     mergeNodeProperty(Settings::ios, IosSettings::merge)
     mergeNodeProperty(Settings::publishing, PublishingSettings::merge)
     mergeNodeProperty(Settings::native, NativeSettings::merge)
+    mergeNodeProperty(Settings::buildInfo, BuildInfoSettings::merge)
 
     mergeScalar(Settings::junit)
 }
@@ -117,6 +119,10 @@ fun PublishingSettings.merge(overwrite: PublishingSettings) = mergeNode(overwrit
 
 fun NativeSettings.merge(overwrite: NativeSettings) = mergeNode(overwrite, ::NativeSettings) {
     mergeScalar(NativeSettings::entryPoint)
+}
+
+fun BuildInfoSettings.merge(overwrite: BuildInfoSettings) = mergeNode(overwrite, ::BuildInfoSettings) {
+    mergeScalar(BuildInfoSettings::file)
 }
 
 fun IosFrameworkSettings.merge(overwrite: IosFrameworkSettings) = mergeNode(overwrite, ::IosFrameworkSettings) {

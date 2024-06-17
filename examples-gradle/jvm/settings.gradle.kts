@@ -1,5 +1,6 @@
 pluginManagement {
     repositories {
+        mavenLocal()
         mavenCentral()
         google()
         gradlePluginPortal()
@@ -10,5 +11,5 @@ pluginManagement {
 }
 
 plugins {
-    id("org.jetbrains.amper.settings.plugin").version("0.3.2-dev-582")
+    id("org.jetbrains.amper.settings.plugin").version("1.0-SNAPSHOT")
 }

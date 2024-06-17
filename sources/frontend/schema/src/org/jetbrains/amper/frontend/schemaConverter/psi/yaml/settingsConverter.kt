@@ -8,6 +8,7 @@ import org.jetbrains.amper.core.messages.ProblemReporterContext
 import org.jetbrains.amper.frontend.schema.AndroidSettings
 import org.jetbrains.amper.frontend.schema.AndroidVersion
 import org.jetbrains.amper.frontend.schema.ComposeSettings
+import org.jetbrains.amper.frontend.schema.BuildInfoSettings
 import org.jetbrains.amper.frontend.schema.IosFrameworkSettings
 import org.jetbrains.amper.frontend.schema.IosSettings
 import org.jetbrains.amper.frontend.schema.JUnitVersion
@@ -42,6 +43,7 @@ internal fun YAMLMapping.doConvertSettings() = Settings().apply {
     ::publishing.convertChildValue { asMappingNode()?.convertPublishingSettings() }
     ::kover.convertChildValue { asMappingNode()?.convertKoverSettings() }
     ::native.convertChildValue { asMappingNode()?.convertNativeSettings() }
+    ::buildInfo.convertChildValue { asMappingNode()?.convertInfoSettings() }
 
     ::junit.convertChildEnum(JUnitVersion)
 }
@@ -142,4 +144,9 @@ internal fun YAMLMapping.convertKoverHtmlSettings() = KoverHtmlSettings().apply 
 context(ProblemReporterContext, ConvertCtx)
 internal fun YAMLMapping.convertNativeSettings() = NativeSettings().apply {
     ::entryPoint.convertChildString()
+}
+
+context(ProblemReporterContext, ConvertCtx)
+internal fun YAMLMapping.convertInfoSettings() = BuildInfoSettings().apply {
+    ::file.convertChildString()
 }

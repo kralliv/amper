@@ -8,6 +8,7 @@ import org.jetbrains.amper.frontend.Platform
 import org.jetbrains.amper.frontend.PotatoModuleDependency
 import org.jetbrains.amper.frontend.doCapitalize
 import org.jetbrains.amper.frontend.mavenRepositories
+import org.jetbrains.amper.tasks.BuildInfoTask
 import org.jetbrains.amper.tasks.ProjectTaskRegistrar
 import org.jetbrains.amper.tasks.ProjectTasksBuilder.Companion.CommonTaskType
 import org.jetbrains.amper.tasks.ProjectTasksBuilder.Companion.getTaskOutputPath
@@ -16,6 +17,19 @@ import org.jetbrains.amper.tasks.PublishTask
 fun ProjectTaskRegistrar.setupJvmTasks() {
     onEachTaskType(Platform.JVM) { module, executeOnChangedInputs, platform, isTest ->
         val fragments = module.fragments.filter { it.isTest == isTest && it.platforms.contains(platform) }
+        val buildInfoTaskName = CommonTaskType.BuildInfo.getTaskName(module, platform, isTest)
+        registerTask(
+            BuildInfoTask(
+                buildInfoTaskName,
+                module = module,
+                isTest = isTest,
+                fragments = fragments,
+                platform = platform,
+                projectRoot = context.projectRoot,
+                taskOutputRoot = context.getTaskOutputPath(buildInfoTaskName),
+            ),
+        )
+
         val compileTaskName = CommonTaskType.Compile.getTaskName(module, platform, isTest)
         registerTask(
             JvmCompileTask(
@@ -29,7 +43,10 @@ fun ProjectTaskRegistrar.setupJvmTasks() {
                 taskName = compileTaskName,
                 executeOnChangedInputs = executeOnChangedInputs,
             ),
-            CommonTaskType.Dependencies.getTaskName(module, platform, isTest)
+            listOf(
+                CommonTaskType.Dependencies.getTaskName(module, platform, isTest),
+                buildInfoTaskName,
+            )
         )
     }
 
@@ -83,9 +100,11 @@ fun ProjectTaskRegistrar.setupJvmTasks() {
             // Publish task should depend on publishing of modules which this module depends on
             // TODO It could be optional in the future by, e.g., introducing an option to `publish` command
             val thisModuleFragments = module.fragments.filter { it.platforms.contains(platform) && !it.isTest }
-            val thisModuleDependencies = thisModuleFragments.flatMap { it.externalDependencies }.filterIsInstance<PotatoModuleDependency>()
+            val thisModuleDependencies =
+                thisModuleFragments.flatMap { it.externalDependencies }.filterIsInstance<PotatoModuleDependency>()
             for (moduleDependency in thisModuleDependencies) {
-                val dependencyPublishTaskName = CommonTaskType.Publish.getTaskName(moduleDependency.module, platform, suffix = publishTaskSuffix)
+                val dependencyPublishTaskName =
+                    CommonTaskType.Publish.getTaskName(moduleDependency.module, platform, suffix = publishTaskSuffix)
                 registerDependency(publishTaskName, dependencyPublishTaskName)
             }
 
